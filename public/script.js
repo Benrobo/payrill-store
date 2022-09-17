@@ -34,7 +34,7 @@ function modal(msg, title="Alert") {
     });
 }
 
-const api = "http://localhost:8080";
+const api = "http://192.168.100.74:8080"; //"http://localhost:8080";
 const storeId = "{{id}}";
 const storeLogo = "{{logo}}";
 const storeName = "{{name}}";
@@ -204,7 +204,7 @@ async function getStoreItems() {
                                 <p>${item.item_name}</p>
                             </font>
                             <font class="price">
-                                <i class="currency">${item.item_currency}</i>
+                                <i class="currency">${currencyToSymbol(item.item_currency)}</i>
                                 <p>${item.item_price}</p>
                             </font>
                         </div>
@@ -267,7 +267,7 @@ async function searchStoreItem(name) {
                                 <p>${item.item_name}</p>
                             </font>
                             <font class="price">
-                                <i class="currency">${item.item_currency}</i>
+                                <i class="currency">${currencyToSymbol(item.item_currency)}</i>
                                 <p>${item.item_price}</p>
                             </font>
                         </div>
@@ -307,6 +307,17 @@ function syncDetector() {
         SYNCDATA = DATA;
         console.log("Syncing...")
     }
+}
+
+function currencyToSymbol(currency) {
+    let all = {
+        "USD": "$",
+        "CAD": "$",
+        "GBP": "£",
+        "JPY": "¥",
+        "EUR": "€"
+    }
+    return all[currency] || currency;
 }
 
 setInterval(async function() {

@@ -5,15 +5,15 @@ let host = process.env.HOST;
 let user = process.env.DB_USER;
 let password = process.env.DB_PASSWORD;
 let database = process.env.DATABASE;
+let port = process.env.MYSQL_PORT;
 
 const connection = mysql.createPool({
     host: host || "localhost",
     user: user || "root",
     password: password || "root",
     database: database || "payrill",
-    port: "3307",
     connectionLimit: 100,
-    port: '/var/run/mysqld/mysqld.sock'  // hack
+    port: port || '/var/run/mysqld/mysqld.sock'  // hack
 });
 
 connection.getConnection((err) => {

@@ -656,7 +656,7 @@ function NOdb(config=null){
                             let new_where = where.rep(keys,values[j]);
                             //console.log(new_where);
                             try{
-                                if(evaluate(new_where)){
+                                if(eval(new_where)){
                                     indexs.push(j);
                                 }
                             }catch(e){
@@ -802,7 +802,7 @@ function NOdb(config=null){
                             let new_where = where.rep(keys,values[j]);
                             //console.log(values[i]);
                             try{
-                                if(evaluate(new_where)){
+                                if(eval(new_where)){
                                     indexs.push(j);
                                 }
                             }catch(e){
@@ -1095,7 +1095,7 @@ function NOdb(config=null){
                             let new_where = where.rep(keys,items[i]);
                             //console.log(new_where);
                             try{
-                                if(evaluate(new_where)){
+                                if(eval(new_where)){
                                     indexs.push(i);
                                 }
                             }catch(e){

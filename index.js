@@ -3,6 +3,8 @@ const app = express();
 const {getSubDomain} = require("./helpers");
 const {makeTemplate} = require("./template");
 const db = require("./db");
+require("dotenv").config({ path: "./.env" });
+let port = process.env.PORT;
 
 const HTML = "./public/index.html";
 const CSS = "./public/style.css";
@@ -61,9 +63,9 @@ app.get('/', function(req, res) {
 
 app.use('/', express.static('public'))
 
-const server = app.listen(8000, function() {
+const server = app.listen(port || 8000, function() {
     const host = server.address().address
     const port = server.address().port
 
-    console.log("Example app listening at http://%s:%s", host, port)
+    console.log("App listening at http://%s:%s", host, port)
 })
