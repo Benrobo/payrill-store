@@ -56,7 +56,7 @@ app.get('/', function(req, res) {
             const template = makeTemplate(results[0], HTML);
             res.send(template);
         } else {
-            res.send("Store Not Found");
+            res.sendFile(__dirname + "/public/404.html");
         }
     })
 })

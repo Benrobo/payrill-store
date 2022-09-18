@@ -1,0 +1,38 @@
+:root {
+    --bg: #131418;
+    --theme: #f68b1e;
+    --danger: rgb(255, 0, 0, .4);
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+@font-face {
+    font-family: poppins;
+    src: url(fonts/pop.ttf);
+}
+
+body{
+    margin: 0px;
+}
+
+#cover {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+text-align: center;}
+
+#not_found {
+    font-family: poppins;
+    color: var(--theme);
+    font-size: 50px;
+}

@@ -34,7 +34,7 @@ function modal(msg, title="Alert") {
     });
 }
 
-const api = "http://192.168.100.74:8080"; //"http://localhost:8080";
+const api = "http://localhost:8080"; // "http://192.168.100.74:8080";
 const storeId = "{{id}}";
 const storeLogo = "{{logo}}";
 const storeName = "{{name}}";
@@ -52,7 +52,7 @@ db.query("CREATE TABLE ecart(ecartId,name,paid,active)");
 
 db.query("SELECT * FROM ecart");
 if (db.length == 0) {
-    createFirstCart();
+    // createFirstCart();
 }
 
 async function createFirstCart() {
