@@ -34,7 +34,7 @@ function modal(msg, title="Alert") {
     });
 }
 
-const api = "http://localhost:8080"; // "http://192.168.100.74:8080";
+const api = "https://api.payrill.app"; //"http://localhost:8080"; // "http://192.168.100.74:8080";
 const storeId = "{{id}}";
 const storeLogo = "{{logo}}";
 const storeName = "{{name}}";
@@ -53,6 +53,41 @@ db.query("CREATE TABLE ecart(ecartId,name,paid,active)");
 db.query("SELECT * FROM ecart");
 if (db.length == 0) {
     // createFirstCart();
+}
+
+async function createEcart(){
+    new Attention.Prompt({
+        title: "Create New Ecart",
+        content: "Enter Name",
+        placeholderText: "Ecart Name",
+        submitText: "Create",
+        onSubmit: async function(component, value) {
+            try {
+                const result = await fetch(api + "/api/ecart/create", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: value,
+                    })
+                });
+                const json = await result.json();
+                db.query(`INSERT INTO ecart VALUES('${json.data.ecart}','${json.data.name}',true,false)`);
+                setActiveEcart(json.data.ecart);
+                modal("Ecart Created");
+            } catch (error) {
+                modal("Error Creating Ecart", "Error")
+            }
+
+        }
+    });
+}
+
+function setActiveEcart(id) {
+    db.query(`UPDATE ecart SET active = 'false' WHERE ecartId != '${id}'`);
+    db.query(`UPDATE ecart SET active = 'true' WHERE ecartId = '${id}'`);
 }
 
 async function createFirstCart() {
@@ -77,9 +112,10 @@ async function addToCart(id) {
             elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Remove From Ecart`;
             elem.setAttribute("class", "removeFromCart");
             elem.setAttribute("onclick", `removeFromCart('${id}')`);
+            syncActiveEcart();
         } else {
             elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Add To Ecart`;
-            modal(json.message);
+            createEcart();
         }
     } catch (error) {
         elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Add To Ecart`;
@@ -100,8 +136,10 @@ async function removeFromCart(id) {
             elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Add To Ecart`;
             elem.setAttribute("class", "addToCart");
             elem.setAttribute("onclick", `addToCart('${id}')`);
+            syncActiveEcart();
         } else {
             elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Remove From Ecart`;
+            modal(json.message);
         }
     } catch (error) {
         elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Remove From Ecart`;
@@ -134,7 +172,7 @@ async function syncItems(stat) {
     }
 }
 
-async function getActiveEcart() {
+async function getActiveEcart(skip) {
     db.query("SELECT * FROM ecart");
     let active = null;
     db.result.active.forEach(function(each, i) {
@@ -143,6 +181,9 @@ async function getActiveEcart() {
         }
     })
     if (!active) {
+        if(skip){
+            return false;
+        }
         await createFirstCart();
         return await getActiveEcart();
     } else {
@@ -233,6 +274,7 @@ async function getStoreItems() {
 
 // Load Store Items
 syncItems();
+syncActiveEcart();
 
 async function searchStoreItem(name) {
     if (name.trim() === "") {
@@ -289,6 +331,16 @@ async function searchStoreItem(name) {
     }
 }
 
+async function exportEcart(){
+    let cartId = await getActiveEcart();
+    modal(cartId,"Ecart Import Code");
+    try {
+        copyToClipboard(cartId);
+    } catch (error) {
+        
+    }
+}
+
 const search = document.getElementById("search");
 search.oninput = function() {
     searchStoreItem(search.value);
@@ -317,7 +369,23 @@ function currencyToSymbol(currency) {
         "JPY": "¥",
         "EUR": "€"
     }
-    return all[currency] || currency;
+    return all[currency] || (currency + " ");
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    console.log('Async: Copying to clipboard was successful!');
+  }, function(err) {
+    console.error('Async: Could not copy text: ', err);
+  });
+}
+
+async function syncActiveEcart() {
+    let cartId = await getActiveEcart(true);
+    if(cartId){
+        document.getElementById("activeEcart").value = cartId;
+        document.getElementById("activeEcart").dataset.now = "true";
+    }
 }
 
 setInterval(async function() {
