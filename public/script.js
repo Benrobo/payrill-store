@@ -34,7 +34,8 @@ function modal(msg, title="Alert") {
     });
 }
 
-const api = "https://api.payrill.app"; //"http://localhost:8080"; // "http://192.168.100.74:8080";
+const api = "https://api.payrill.app";
+//"http://localhost:8080"; // "http://192.168.100.74:8080";
 const storeId = "{{id}}";
 const storeLogo = "{{logo}}";
 const storeName = "{{name}}";
@@ -51,11 +52,10 @@ let db = new NOdb({
 db.query("CREATE TABLE ecart(ecartId,name,paid,active)");
 
 db.query("SELECT * FROM ecart");
-if (db.length == 0) {
-    // createFirstCart();
+if (db.length == 0) {// createFirstCart();
 }
 
-async function createEcart(){
+async function createEcart() {
     new Attention.Prompt({
         title: "Create New Ecart",
         content: "Enter Name",
@@ -115,6 +115,9 @@ async function addToCart(id) {
             syncActiveEcart();
         } else {
             elem.innerHTML = `<i class="fa fa-shopping-cart"></i> Add To Ecart`;
+            if (json.message == "Item is out of stock!") {
+                return modal(json.message);
+            }
             createEcart();
         }
     } catch (error) {
@@ -181,7 +184,7 @@ async function getActiveEcart(skip) {
         }
     })
     if (!active) {
-        if(skip){
+        if (skip) {
             return false;
         }
         await createFirstCart();
@@ -204,15 +207,13 @@ function stopLoader() {
 function showSync() {
     try {
         document.getElementById("sync").style.display = "block";
-    } catch (e) {
-    }
+    } catch (e) {}
 }
 
 function hideSync() {
     try {
         document.getElementById("sync").style.display = "none";
-    } catch (e) {
-    }
+    } catch (e) {}
 }
 
 async function getStoreItems() {
@@ -263,7 +264,6 @@ async function getStoreItems() {
             try {
                 document.getElementById("sync").remove()
             } catch (error) {
-                
             }
         }
         document.getElementById("item_count").innerHTML = items.length;
@@ -331,13 +331,12 @@ async function searchStoreItem(name) {
     }
 }
 
-async function exportEcart(){
+async function exportEcart() {
     let cartId = await getActiveEcart();
-    modal(cartId,"Ecart Import Code");
+    modal(cartId, "Ecart Import Code");
     try {
         copyToClipboard(cartId);
     } catch (error) {
-        
     }
 }
 
@@ -354,7 +353,7 @@ let SYNCDATA = JSON.stringify(db.getDB());
 
 function syncDetector() {
     let DATA = JSON.stringify(db.getDB());
-    if(DATA != SYNCDATA){
+    if (DATA != SYNCDATA) {
         syncItems();
         SYNCDATA = DATA;
         console.log("Syncing...")
@@ -373,16 +372,16 @@ function currencyToSymbol(currency) {
 }
 
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(function() {
-    console.log('Async: Copying to clipboard was successful!');
-  }, function(err) {
-    console.error('Async: Could not copy text: ', err);
-  });
+    navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+    });
 }
 
 async function syncActiveEcart() {
     let cartId = await getActiveEcart(true);
-    if(cartId){
+    if (cartId) {
         document.getElementById("activeEcart").value = cartId;
         document.getElementById("activeEcart").dataset.now = "true";
     }

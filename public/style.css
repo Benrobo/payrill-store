@@ -420,7 +420,7 @@ svg {
     border-radius: 100px;
     height: 40px;
     padding: 0px 10px;
-    width: -webkit-fill-available;
+    width: fit-content;
     border: 1px solid white;
     font-weight: bolder;
     font-family: 'poppins';
